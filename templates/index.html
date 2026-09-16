@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page_title }} | Game Portal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+    <h1>🎮 Мой Игровой Портал</h1>
+    <nav>
+        <a href="/">Главная</a>
+        <a href="/about">О проекте</a>
+        
+        {% if session.username %}
+            <!-- Если пользователь вошел -->
+            <span style="color: #95a5a6; margin-left: 20px;">Привет, {{ session.username }}!</span>
+            <a href="/logout" style="margin-left: 10px;">Выйти</a>
+        {% else %}
+            <!-- Если пользователь не вошел -->
+            <a href="/login">Войти</a>
+            <a href="/register">Регистрация</a>
+        {% endif %}
+    </nav>
+</header>
+
+    <main>
+        <h2>Каталог игр</h2>
+        
+        <!-- Панель поиска и фильтров -->
+        <div class="search-panel">
+            <input 
+                type="text" 
+                id="searchInput" 
+                placeholder="Поиск игр..." 
+                class="search-input"
+            >
+            
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-category="">Все</button>
+                <button class="filter-btn" data-category="Аркада">Аркады</button>
+                <button class="filter-btn" data-category="Шутер">Шутеры</button>
+                <button class="filter-btn" data-category="Головоломка">Головоломки</button>
+            </div>
+        </div>
+        
+        <!-- Контейнер для карточек игр -->
+        <div class="games-grid" id="gamesGrid">
+            <!-- Карточки будут загружаться динамически через JavaScript -->
+        </div>
+        
+        <!-- Сообщение, если игры не найдены -->
+        <div id="noResults" style="display: none; text-align: center; padding: 40px; color: #666;">
+            <h3>Игры не найдены</h3>
+            <p>Попробуйте изменить поисковый запрос или фильтр</p>
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2026 Индивидуальный проект. Студент: Набиуллин Тагир</p>
+    </footer>
+
+    <!-- Подключение JavaScript -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

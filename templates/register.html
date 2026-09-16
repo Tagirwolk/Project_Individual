@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация | Game Portal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>🎮 Регистрация</h1>
+        <nav>
+            <a href="/">← Назад</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="auth-form">
+            <h2>Создать аккаунт</h2>
+            
+            {% if error %}
+                <div class="error-message">{{ error }}</div>
+            {% endif %}
+            
+            <form method="POST">
+                <div class="form-group">
+                    <label for="username">Имя пользователя:</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Пароль:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                
+                <button type="submit" class="btn-primary">Зарегистрироваться</button>
+            </form>
+            
+            <p class="auth-link">Уже есть аккаунт? <a href="/login">Войти</a></p>
+        </div>
+    </main>
+</body>
+</html>

@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2048 Puzzle</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            flex-direction: column;
+            font-family: 'Segoe UI', sans-serif;
+            color: white;
+        }
+        .game-container {
+            text-align: center;
+        }
+        #score {
+            font-size: 28px;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 100px);
+            grid-template-rows: repeat(4, 100px);
+            gap: 10px;
+            background-color: #bbada0;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .cell {
+            background-color: #cdc1b4;
+            border-radius: 6px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 32px;
+            font-weight: bold;
+            color: #776e65;
+            transition: all 0.15s ease;
+        }
+        .cell[data-value="2"] { background-color: #eee4da; }
+        .cell[data-value="4"] { background-color: #ede0c8; }
+        .cell[data-value="8"] { background-color: #f2b179; color: white; }
+        .cell[data-value="16"] { background-color: #f59563; color: white; }
+        .cell[data-value="32"] { background-color: #f67c5f; color: white; }
+        .cell[data-value="64"] { background-color: #f65e3b; color: white; }
+        .cell[data-value="128"] { background-color: #edcf72; color: white; font-size: 28px; }
+        .cell[data-value="256"] { background-color: #edcc61; color: white; font-size: 28px; }
+        .cell[data-value="512"] { background-color: #edc850; color: white; font-size: 28px; }
+        .cell[data-value="1024"] { background-color: #edc53f; color: white; font-size: 24px; }
+        .cell[data-value="2048"] { background-color: #edc22e; color: white; font-size: 24px; }
+        #message {
+            margin-top: 20px;
+            font-size: 20px;
+            min-height: 30px;
+        }
+        #restart {
+            margin-top: 15px;
+            padding: 10px 25px;
+            font-size: 16px;
+            background-color: #8f7a66;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: none;
+        }
+        #restart:hover {
+            background-color: #9f8a76;
+        }
+        .controls {
+            margin-top: 15px;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div id="score">Счёт: 0</div>
+        <div class="grid" id="grid"></div>
+        <div id="message"></div>
+        <button id="restart" onclick="initGame()">Начать заново</button>
+        <div class="controls">Используйте стрелки для перемещения плиток</div>
+    </div>
+
+    <script>
+        const GRID_SIZE = 4;
+        let grid = [];
+        let score = 0;
+        let gameOver = false;
+
+        // Инициализация игры
+        function initGame() {
+            grid = Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(0));
+            score = 0;
+            gameOver = false;
+            document.getElementById('score').textContent = 'Счёт: 0';
+            document.getElementById('message').textContent = '';
+            document.getElementById('restart').style.display = 'none';
+            
+            addRandomTile();
+            addRandomTile();
+            renderGrid();
+        }
+
+        // Добавление случайной плитки (2 или 4)
+        function addRandomTile() {
+            const emptyCells = [];
+            for (let i = 0; i < GRID_SIZE; i++) {
+                for (let j = 0; j < GRID_SIZE; j++) {
+                    if (grid[i][j] === 0) {
+                        emptyCells.push({ x: i, y: j });
+                    }
+                }
+            }
+            
+            if (emptyCells.length === 0) return;
+            
+            const randomCell = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+            grid[randomCell.x][randomCell.y] = Math.random() < 0.9 ? 2 : 4;
+        }
+
+        // Отрисовка сетки
+        function renderGrid() {
+            const gridElement = document.getElementById('grid');
+            gridElement.innerHTML = '';
+            
+            for (let i = 0; i < GRID_SIZE; i++) {
+                for (let j = 0; j < GRID_SIZE; j++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    const value = grid[i][j];
+                    if (value !== 0) {
+                        cell.textContent = value;
+                        cell.setAttribute('data-value', value);
+                    }
+                    gridElement.appendChild(cell);
+                }
+            }
+        }
+
+        // Движение влево
+        function moveLeft() {
+            let moved = false;
+            for (let i = 0; i < GRID_SIZE; i++) {
+                const row = grid[i].filter(val => val !== 0);
+                for (let j = 0; j < row.length - 1; j++) {
+                    if (row[j] === row[j + 1]) {
+                        row[j] *= 2;
+                        score += row[j];
+                        row.splice(j + 1, 1);
+                    }
+                }
+                while (row.length < GRID_SIZE) row.push(0);
+                if (grid[i].join(',') !== row.join(',')) moved = true;
+                grid[i] = row;
+            }
+            return moved;
+        }
+
+        // Движение вправо
+        function moveRight() {
+            let moved = false;
+            for (let i = 0; i < GRID_SIZE; i++) {
+                const row = grid[i].filter(val => val !== 0);
+                for (let j = row.length - 1; j > 0; j--) {
+                    if (row[j] === row[j - 1]) {
+                        row[j] *= 2;
+                        score += row[j];
+                        row.splice(j - 1, 1);
+                        j--;
+                    }
+                }
+                while (row.length < GRID_SIZE) row.unshift(0);
+                if (grid[i].join(',') !== row.join(',')) moved = true;
+                grid[i] = row;
+            }
+            return moved;
+        }
+
+        // Движение вверх
+        function moveUp() {
+            let moved = false;
+            for (let j = 0; j < GRID_SIZE; j++) {
+                const col = [];
+                for (let i = 0; i < GRID_SIZE; i++) {
+                    if (grid[i][j] !== 0) col.push(grid[i][j]);
+                }
+                for (let i = 0; i < col.length - 1; i++) {
+                    if (col[i] === col[i + 1]) {
+                        col[i] *= 2;
+                        score += col[i];
+                        col.splice(i + 1, 1);
+                    }
+                }
+                while (col.length < GRID_SIZE) col.push(0);
+                
+                let colChanged = false;
+                for (let i = 0; i < GRID_SIZE; i++) {
+                    if (grid[i][j] !== col[i]) {
+                        colChanged = true;
+                        break;
+                    }
+                }
+                if (colChanged) moved = true;
+                
+                for (let i = 0; i < GRID_SIZE; i++) {
+                    grid[i][j] = col[i];
+                }
+            }
+            return moved;
+        }
+
+        // Движение вниз
+        function moveDown() {
+            let moved = false;
+            for (let j = 0; j < GRID_SIZE; j++) {
+                const col = [];
+                for (let i = 0; i < GRID_SIZE; i++) {
+                    if (grid[i][j] !== 0) col.push(grid[i][j]);
+                }
+                for (let i = col.length - 1; i > 0; i--) {
+                    if (col[i] === col[i - 1]) {
+                        col[i] *= 2;
+                        score += col[i];
+                        col.splice(i - 1, 1);
+                        i--;
+                    }
+                }
+                while (col.length < GRID_SIZE) col.unshift(0);
+                
+                let colChanged = false;
+                for (let i = 0; i < GRID_SIZE; i++) {
+                    if (grid[i][j] !== col[i]) {
+                        colChanged = true;
+                        break;
+                    }
+                }
+                if (colChanged) moved = true;
+                
+                for (let i = 0; i < GRID_SIZE; i++) {
+                    grid[i][j] = col[i];
+                }
+            }
+            return moved;
+        }
+
+        // Проверка окончания игры
+        function checkGameOver() {
+            // Проверка на наличие пустых клеток
+            for (let i = 0; i < GRID_SIZE; i++) {
+                for (let j = 0; j < GRID_SIZE; j++) {
+                    if (grid[i][j] === 0) return false;
+                }
+            }
+            
+            // Проверка на возможность слияния
+            for (let i = 0; i < GRID_SIZE; i++) {
+                for (let j = 0; j < GRID_SIZE; j++) {
+                    const current = grid[i][j];
+                    if (i < GRID_SIZE - 1 && current === grid[i + 1][j]) return false;
+                    if (j < GRID_SIZE - 1 && current === grid[i][j + 1]) return false;
+                }
+            }
+            
+            return true;
+        }
+
+        // Проверка победы (достигли 2048)
+        function checkWin() {
+            for (let i = 0; i < GRID_SIZE; i++) {
+                for (let j = 0; j < GRID_SIZE; j++) {
+                    if (grid[i][j] === 2048) return true;
+                }
+            }
+            return false;
+        }
+
+        // Обработка нажатий клавиш
+        document.addEventListener('keydown', (e) => {
+            if (gameOver) return;
+            
+            let moved = false;
+            
+            switch(e.key) {
+                case 'ArrowLeft':
+                    moved = moveLeft();
+                    break;
+                case 'ArrowRight':
+                    moved = moveRight();
+                    break;
+                case 'ArrowUp':
+                    moved = moveUp();
+                    break;
+                case 'ArrowDown':
+                    moved = moveDown();
+                    break;
+            }
+            
+            if (moved) {
+                addRandomTile();
+                renderGrid();
+                document.getElementById('score').textContent = 'Счёт: ' + score;
+                
+                if (checkWin()) {
+                    document.getElementById('message').textContent = '🎉 Победа! Вы достигли 2048!';
+                    document.getElementById('message').style.color = '#ffd700';
+                    gameOver = true;
+                    document.getElementById('restart').style.display = 'inline-block';
+                } else if (checkGameOver()) {
+                    document.getElementById('message').textContent = 'Игра окончена! Нет доступных ходов.';
+                    document.getElementById('message').style.color = '#ff6b6b';
+                    gameOver = true;
+                    document.getElementById('restart').style.display = 'inline-block';
+                }
+            }
+        });
+
+        // Запуск игры
+        initGame();
+    </script>
+</body>
+</html>

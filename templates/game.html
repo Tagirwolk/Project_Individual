@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ game.title }} | Game Portal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .game-container {
+            width: 100%;
+            max-width: 850px;
+            height: 650px;
+            margin: 20px auto;
+            border: 2px solid #2c3e50;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .game-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .game-info {
+            max-width: 850px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        .rating-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .stars {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .star-btn {
+            font-size: 32px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #ddd;
+            transition: color 0.2s;
+        }
+        .star-btn:hover,
+        .star-btn.active {
+            color: #f39c12;
+        }
+        .avg-rating {
+            font-size: 18px;
+            color: #666;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🎮 {{ game.title }}</h1>
+        <nav>
+            <a href="/">← Назад к играм</a>
+            {% if session.username %}
+                <span>Привет, {{ session.username }}!</span>
+                <a href="/logout">Выйти</a>
+            {% else %}
+                <a href="/login">Войти</a>
+            {% endif %}
+        </nav>
+    </header>
+
+    <main>
+        <div class="game-container">
+            <iframe src="{{ url_for('static', filename='games/' + game.folder_name + '/index.html') }}" title="Game"></iframe>
+        </div>
+        
+        <div class="game-info">
+            <h2>Описание</h2>
+            <p>{{ game.description }}</p>
+            <p><strong>Жанр:</strong> {{ game.category }}</p>
+            
+            <!-- Секция рейтинга -->
+            <div class="rating-section">
+                <h3>Оцените игру</h3>
+                
+                {% if session.username %}
+                    <form method="POST" action="/rate/{{ game.id }}">
+                        <div class="stars">
+                            {% for i in range(1, 6) %}
+                                <button type="submit" name="rating" value="{{ i }}" class="star-btn">★</button>
+                            {% endfor %}
+                        </div>
+                    </form>
+                {% else %}
+                    <p><a href="/login">Войдите</a>, чтобы оценить игру</p>
+                {% endif %}
+                
+                <div class="avg-rating">
+                    {% if avg_rating %}
+                        Средний рейтинг: {{ "%.1f"|format(avg_rating) }} ★ ({{ total_ratings }} оценок)
+                    {% else %}
+                        Пока нет оценок
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2026 Индивидуальный проект. Студент: Набиуллин Тагир</p>
+    </footer>
+</body>
+</html>
