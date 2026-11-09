@@ -8,8 +8,8 @@ body {
 }
 
 header {
-    background-color: #2c3e50;
-    color: white;
+    background-color: #426a92;
+    color: rgb(236, 236, 236);
     padding: 1rem 2rem;
     display: flex;
     justify-content: space-between;
@@ -17,7 +17,7 @@ header {
 }
 
 header nav a {
-    color: white;
+    color: rgb(236, 236, 236);
     text-decoration: none;
     margin-left: 20px;
     font-weight: bold;
@@ -38,7 +38,7 @@ main {
 
 /* Карточка игры */
 .game-card {
-    background: white;
+    background: rgb(236, 236, 236);
     border-radius: 8px;
     padding: 15px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
@@ -51,8 +51,8 @@ main {
 }
 
 .game-image-placeholder {
-    background-color: #3498db;
-    color: white;
+    background-color: #0c17ad;
+    color: rgb(140, 255, 226);
     height: 150px;
     display: flex;
     align-items: center;
@@ -64,8 +64,8 @@ main {
 
 .play-btn {
     display: inline-block;
-    background-color: #27ae60;
-    color: white;
+    background-color: #1cbb5e;
+    color: rgb(140, 255, 226);
     padding: 10px 20px;
     text-decoration: none;
     border-radius: 5px;
@@ -79,13 +79,13 @@ main {
 footer {
     text-align: center;
     padding: 20px;
-    background-color: #2c3e50;
+    background-color: #476d92;
     color: white;
     margin-top: 40px;
 }
 /* Панель поиска и фильтров */
 .search-panel {
-    background: white;
+    background: rgb(236, 236, 236);
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
@@ -93,7 +93,7 @@ footer {
 }
 
 .search-input {
-    width: 100%;
+    width: 96%;
     padding: 12px 20px;
     font-size: 16px;
     border: 2px solid #e0e0e0;
